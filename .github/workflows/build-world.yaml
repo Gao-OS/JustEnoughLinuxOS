@@ -22,13 +22,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.git-ref }}
-      - name: Get date for artifacts
+
+      - name: 📅 Get date for artifacts
         id: date
         run: echo "date=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
-      - name: Get short SHA for artifacts
+
+      - name: ™️ Get short SHA for artifacts
         id: sha
         run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - name: Build World
+
+      - name: 🏗️ Build World
         run: |
             set -e
             CUSTOM_VERSION="${{ github.event.inputs.version }}" \
