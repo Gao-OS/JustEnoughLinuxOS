@@ -1,0 +1,37 @@
+name: build-world
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: 'The version of the build'
+        default: '0.1.0'
+      git-ref:
+        required: true
+        description: 'The git revison of repo, branch, tag or commit'
+        default: 'main'
+
+jobs:
+  build:
+    timeout-minutes: 1440
+    # maybe I should use my build server instead of ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git-ref }}
+      - name: Get date for artifacts
+        id: date
+        run: echo "date=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+      - name: Get short SHA for artifacts
+        id: sha
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build World
+        run: |
+            set -e
+            CUSTOM_VERSION="${{ github.event.inputs.version }}" \
+            DOCKER_WORK_DIR="/work" \
+            DOCKER_EXTRA_OPTS="-v /buildroot:/buildroot" \
+            make docker-world
